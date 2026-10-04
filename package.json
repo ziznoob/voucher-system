@@ -1,0 +1,20 @@
+{
+  "name": "voucher-service-node",
+  "version": "1.5.0",
+  "description": "Campaign voucher redemption service (Node.js port of the Spring Boot voucher-service)",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env --disable-warning=ExperimentalWarning src/server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.0"
+  }
+}
