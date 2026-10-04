@@ -4,6 +4,14 @@ import * as validate from '../http/validation.js';
 export function campaignController(campaignStatsService) {
   const router = Router();
 
+  router.get('/', (_req, res) => {
+    res.json(campaignStatsService.listCampaigns());
+  });
+
+  router.get('/:id/vouchers', (req, res) => {
+    res.json(campaignStatsService.listVouchers(validate.campaignId(req.params.id)));
+  });
+
   router.get('/:id/stats', (req, res) => {
     res.json(campaignStatsService.getStats(validate.campaignId(req.params.id)));
   });

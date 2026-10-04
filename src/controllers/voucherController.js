@@ -5,6 +5,11 @@ import { redeemOk } from '../http/responses.js';
 export function voucherController(voucherService) {
   const router = Router();
 
+  // GET /vouchers/:code
+  router.get('/:code', (req, res) => {
+    res.json(voucherService.getVoucher(validate.voucherCode(req.params.code)));
+  });
+
   // POST /vouchers/:code/redeem?userId=...   (userId in JSON body also accepted)
   router.post('/:code/redeem', (req, res) => {
     const code = validate.voucherCode(req.params.code);

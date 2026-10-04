@@ -3,6 +3,12 @@ import { conflict, notFound, unprocessable } from '../http/errors.js';
 
 export function createVoucherService({ db, voucherRepository, campaignRepository, redemptionRepository, auditClient, logger = console, now = () => new Date() }) {
   return {
+    getVoucher(code) {
+      const voucher = voucherRepository.findByCode(code);
+      if (!voucher) throw notFound('Voucher not found');
+      return voucher;
+    },
+
     /**
      * Redeems a voucher for a user.
      *

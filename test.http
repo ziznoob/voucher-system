@@ -1,0 +1,114 @@
+# Manual API requests for voucher-service.
+# Works with the VS Code "REST Client" extension or JetBrains HTTP Client.
+# Start the server first: npm start
+# The DB is in-memory, so restarting the server resets the sample data.
+
+@baseUrl = http://localhost:8080
+
+### Health check
+GET {{baseUrl}}/health
+
+################################################################
+# Browse
+################################################################
+
+### List all campaigns
+GET {{baseUrl}}/campaigns
+
+### List vouchers of campaign 1 (Raya Flash Deal)
+GET {{baseUrl}}/campaigns/1/vouchers
+
+### List vouchers of campaign 2 (Merdeka Giveaway)
+GET {{baseUrl}}/campaigns/2/vouchers
+
+### List vouchers of unknown campaign -> 404
+GET {{baseUrl}}/campaigns/999/vouchers
+
+### List vouchers with invalid campaign id -> 400
+GET {{baseUrl}}/campaigns/abc/vouchers
+
+### Get voucher by code
+GET {{baseUrl}}/vouchers/RAYA-0001
+
+### Get unknown voucher -> 404
+GET {{baseUrl}}/vouchers/NOPE-1
+
+################################################################
+# Redeem
+################################################################
+
+### Redeem (userId in query string) -> 200
+POST {{baseUrl}}/vouchers/RAYA-0001/redeem?userId=user-1
+
+### Redeem the same voucher again -> 409 already redeemed
+POST {{baseUrl}}/vouchers/RAYA-0001/redeem?userId=user-2
+
+### Redeem (userId in JSON body) -> 200
+POST {{baseUrl}}/vouchers/MRDK-0001/redeem
+Content-Type: application/json
+
+{
+  "userId": "user-1"
+}
+
+### Redeem already-redeemed seed voucher -> 409
+POST {{baseUrl}}/vouchers/RAYA-0004/redeem?userId=user-1
+
+### Redeem void voucher -> 409
+POST {{baseUrl}}/vouchers/RAYA-0005/redeem?userId=user-1
+
+### Redeem voucher of inactive campaign -> 422
+POST {{baseUrl}}/vouchers/EXPD-0001/redeem?userId=user-1
+
+### Redeem unknown voucher -> 404
+POST {{baseUrl}}/vouchers/NOPE-1/redeem?userId=user-1
+
+### Redeem without userId -> 400
+POST {{baseUrl}}/vouchers/RAYA-0002/redeem
+
+### Redeem with invalid voucher code -> 400
+POST {{baseUrl}}/vouchers/BAD_CODE!/redeem?userId=user-1
+
+### Redeem with malformed JSON body -> 400
+POST {{baseUrl}}/vouchers/RAYA-0002/redeem
+Content-Type: application/json
+
+{ "userId":
+
+################################################################
+# Void
+################################################################
+
+### Void an active voucher -> 200
+POST {{baseUrl}}/vouchers/RAYA-0006/void
+
+### Void it again -> 409 already void
+POST {{baseUrl}}/vouchers/RAYA-0006/void
+
+### Void a redeemed voucher -> 409
+POST {{baseUrl}}/vouchers/RAYA-0004/void
+
+### Void unknown voucher -> 404
+POST {{baseUrl}}/vouchers/NOPE-1/void
+
+################################################################
+# Stats
+################################################################
+
+### Campaign stats
+GET {{baseUrl}}/campaigns/1/stats
+
+### Stats of unknown campaign -> 404
+GET {{baseUrl}}/campaigns/999/stats
+
+### Stats with invalid campaign id -> 400
+GET {{baseUrl}}/campaigns/abc/stats
+
+### Stats by client
+GET {{baseUrl}}/campaigns/by-client/ACME/stats
+
+### Stats by unknown client -> 200 empty list
+GET {{baseUrl}}/campaigns/by-client/NOBODY/stats
+
+### Unknown route -> 404
+GET {{baseUrl}}/does-not-exist

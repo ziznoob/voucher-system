@@ -10,6 +10,7 @@ const toVoucher = (row) =>
 
 export function createVoucherRepository(db) {
   const byCode = db.prepare('SELECT * FROM voucher WHERE code = ?');
+  const byCampaign = db.prepare('SELECT * FROM voucher WHERE campaign_id = ? ORDER BY id');
   // Guarded state transitions: the UPDATE only applies if the voucher is still ACTIVE,
   // so two concurrent requests can never both redeem (or void) the same voucher.
   const redeem = db.prepare(
@@ -19,6 +20,7 @@ export function createVoucherRepository(db) {
 
   return {
     findByCode: (code) => toVoucher(byCode.get(code)),
+    findByCampaignId: (campaignId) => byCampaign.all(campaignId).map(toVoucher),
     /** @returns {boolean} true if this call moved the voucher ACTIVE -> REDEEMED */
     markRedeemed: (id, userId, at) => redeem.run(userId, at, id).changes === 1,
     /** @returns {boolean} true if this call moved the voucher ACTIVE -> VOID */

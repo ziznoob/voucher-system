@@ -17,7 +17,7 @@ End users redeem a voucher code via the storefront, which calls this service.
 npm install
 cp .env.example .env     # optional, defaults work for local dev
 npm start                # http://localhost:8080
-npm test                 # 28 tests, node:test + supertest
+npm test                 # 33 tests, node:test + supertest
 ```
 
 By default the DB is in-memory SQLite, seeded with the same sample data as the original
@@ -45,6 +45,9 @@ The paths and the response body shape are the same as the original:
 | GET | `/campaigns/{id}/stats` | 200 | 400 bad id, 404 unknown campaign |
 | GET | `/campaigns/by-client/{clientCode}/stats` | 200 (list, may be empty) | 400 |
 | GET | `/health` | 200 | |
+| GET | `/campaigns` | 200 (list) | |
+| GET | `/campaigns/{id}/vouchers` | 200 (list) | 400 bad id, 404 unknown campaign |
+| GET | `/vouchers/{code}` | 200 | 400 invalid code, 404 not found |
 
 `userId` for redeem can come from the query string (as before) or a JSON body `{ "userId": "..." }`.
 

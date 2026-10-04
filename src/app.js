@@ -21,7 +21,7 @@ export function createApp({ db, auditClient, logger = console, now }) {
   const voucherService = createVoucherService({
     db, voucherRepository, campaignRepository, redemptionRepository, auditClient, logger, now,
   });
-  const campaignStatsService = createCampaignStatsService({ campaignRepository });
+  const campaignStatsService = createCampaignStatsService({ campaignRepository, voucherRepository });
 
   const app = express();
   app.disable('x-powered-by');

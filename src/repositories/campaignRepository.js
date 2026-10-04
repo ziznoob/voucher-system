@@ -28,6 +28,7 @@ const STATS_SELECT = `
 
 export function createCampaignRepository(db) {
   const byId = db.prepare('SELECT * FROM campaign WHERE id = ?');
+  const all = db.prepare('SELECT * FROM campaign ORDER BY id');
   // Guarded decrement: only succeeds while the campaign is active and has stock.
   // This is what stops overselling when two requests race for the last unit.
   const decrement = db.prepare(
@@ -38,6 +39,7 @@ export function createCampaignRepository(db) {
 
   return {
     findById: (id) => toCampaign(byId.get(id)),
+    findAll: () => all.all().map(toCampaign),
     /** @returns {boolean} true if a unit of stock was taken */
     decrementStock: (id) => decrement.run(id).changes === 1,
     getStats: (id) => {
